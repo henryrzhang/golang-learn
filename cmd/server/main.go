@@ -32,8 +32,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "load config: %v\n", err)
 		os.Exit(1)
 	}
-
 	logger.Init(cfg.Log.Level, cfg.Log.Format)
+	logger.L().Info().Str("path", cfgPath).Msg("config loaded")
 
 	ctx := context.Background()
 
@@ -43,6 +43,7 @@ func main() {
 		logger.L().Fatal().Err(err).Msg("connect database failed")
 	}
 	defer database.Close()
+	logger.L().Info().Msg("database connected")
 
 	// Redis
 	rdb, err := redis.New(cfg.Redis.Addr, cfg.Redis.Password, cfg.Redis.DB)
@@ -50,11 +51,13 @@ func main() {
 		logger.L().Warn().Err(err).Msg("connect redis failed, cache disabled")
 	} else {
 		defer rdb.Close()
+		logger.L().Info().Str("addr", cfg.Redis.Addr).Msg("redis connected")
 	}
 	_ = rdb // 预留缓存使用
 
 	// JWT
 	jwtMgr := jwt.New(cfg.JWT.Secret, cfg.JWT.ExpireHours)
+	logger.L().Info().Int("expire_hours", cfg.JWT.ExpireHours).Msg("jwt initialized")
 
 	// 路由
 	authSvc := service.NewAuthService(database.Pool, jwtMgr)
@@ -70,6 +73,7 @@ func main() {
 			handler.NewDramaHandler(dramaSvc),
 		},
 	})
+	logger.L().Info().Msg("router initialized")
 
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 	srv := &http.Server{Addr: addr, Handler: r}

@@ -31,7 +31,11 @@ func Init(level, format string) {
 		w = zerolog.ConsoleWriter{Out: os.Stdout}
 	}
 
-	log.Logger = zerolog.New(w).With().Timestamp().Caller().Logger()
+	ctx := zerolog.New(w).With().Timestamp()
+	if level == "debug" {
+		ctx = ctx.Caller()
+	}
+	log.Logger = ctx.Logger()
 }
 
 // L 返回带上下文的 logger

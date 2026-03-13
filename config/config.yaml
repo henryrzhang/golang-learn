@@ -8,7 +8,7 @@ log:
   format: "json" # json 或 console
 
 database:
-  url: "postgres://postgres:postgres@localhost:5432/golang_learn?sslmode=disable"
+  url: "postgres://postgres:postgres123@localhost:5432/golang_learn?sslmode=disable"
   max_open_conns: 25
   max_idle_conns: 5
 
