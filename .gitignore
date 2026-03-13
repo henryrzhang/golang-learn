@@ -1,0 +1,36 @@
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build output
+*.test
+*.out
+coverage.html
+
+server
+
+# Go workspace
+go.work
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config overrides (keep config/config.yaml, ignore local overrides)
+config/config.local.yaml
+*.local.yaml
+
+# Logs
+*.log
+logs/
