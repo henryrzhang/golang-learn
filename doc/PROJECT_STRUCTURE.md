@@ -34,19 +34,16 @@ golang-learn/
 │   ├── router/                 # 路由注册（健康检查、/api 分组、中间件）
 │   │   └── router.go
 │   ├── handler/                # HTTP 处理器
-│   │   ├── auth.go             # 注册、登录
-│   │   ├── user.go             # 用户信息
+│   │   ├── user.go             # 注册、登录、用户信息
 │   │   └── drama.go            # 剧集 CRUD
 │   ├── middleware/             # 中间件
 │   │   ├── auth.go             # JWT 鉴权
 │   │   └── logger.go           # 请求日志
 │   ├── dto/                    # API 请求/响应 DTO
-│   │   ├── auth.go
 │   │   ├── user.go
 │   │   └── drama.go
 │   └── service/                # 业务逻辑层
-│       ├── auth.go
-│       ├── user.go
+│       ├── user.go             # 注册、登录、用户信息（含 Redis 缓存）
 │       └── drama.go
 ├── sqlc/                       # sqlc 配置与 SQL
 │   ├── sqlc.yaml

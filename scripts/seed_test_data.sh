@@ -13,7 +13,7 @@ NAME="测试用户"
 PHONE="13800138000"
 
 echo "=== 1. 注册/登录测试用户 ==="
-REGISTER_RESP=$(curl -s -w "\n%{http_code}" -X POST "${API}/auth/register" \
+REGISTER_RESP=$(curl -s -w "\n%{http_code}" -X POST "${API}/user/register" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"${NAME}\",\"email\":\"${EMAIL}\",\"phone\":\"${PHONE}\",\"password\":\"${PASSWORD}\"}")
 
@@ -22,7 +22,7 @@ BODY=$(echo "$REGISTER_RESP" | sed '$d')
 
 if [ "$HTTP_CODE" = "409" ]; then
   echo "用户已存在，尝试登录..."
-  LOGIN_RESP=$(curl -s -X POST "${API}/auth/login" \
+  LOGIN_RESP=$(curl -s -X POST "${API}/user/login" \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}")
   BODY="$LOGIN_RESP"

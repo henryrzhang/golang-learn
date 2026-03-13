@@ -23,6 +23,20 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 
 func (h *UserHandler) Register(api huma.API) {
 	huma.Register(api, huma.Operation{
+		OperationID: "register",
+		Method:      http.MethodPost,
+		Path:        "/user/register",
+		Summary:     "用户注册",
+		Tags:        []string{"用户"},
+	}, h.RegisterHandler)
+	huma.Register(api, huma.Operation{
+		OperationID: "login",
+		Method:      http.MethodPost,
+		Path:        "/user/login",
+		Summary:     "用户登录",
+		Tags:        []string{"用户"},
+	}, h.LoginHandler)
+	huma.Register(api, huma.Operation{
 		OperationID: "get-current-user",
 		Method:      http.MethodGet,
 		Path:        "/user/me",
@@ -36,6 +50,43 @@ func (h *UserHandler) Register(api huma.API) {
 		Summary:     "根据ID获取用户信息",
 		Tags:        []string{"用户"},
 	}, h.GetByIDHandler)
+}
+
+func (h *UserHandler) RegisterHandler(ctx context.Context, input *struct {
+	Body dto.RegisterRequest
+}) (*struct {
+	Body dto.AuthResponse
+}, error) {
+	resp, err := h.svc.Register(ctx, &input.Body)
+	if err != nil {
+		if errors.Is(err, service.ErrEmailExists) {
+			return nil, huma.Error409Conflict("邮箱已注册")
+		}
+		return nil, err
+	}
+	return &struct {
+		Body dto.AuthResponse
+	}{Body: *resp}, nil
+}
+
+func (h *UserHandler) LoginHandler(ctx context.Context, input *struct {
+	Body dto.LoginRequest
+}) (*struct {
+	Body dto.AuthResponse
+}, error) {
+	resp, err := h.svc.Login(ctx, &input.Body)
+	if err != nil {
+		if errors.Is(err, service.ErrInvalidCred) {
+			return nil, huma.Error401Unauthorized("邮箱或密码错误")
+		}
+		if errors.Is(err, service.ErrUserDisabled) {
+			return nil, huma.Error403Forbidden("用户已禁用")
+		}
+		return nil, err
+	}
+	return &struct {
+		Body dto.AuthResponse
+	}{Body: *resp}, nil
 }
 
 func (h *UserHandler) GetMeHandler(ctx context.Context, input *struct{}) (*struct {

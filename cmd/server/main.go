@@ -53,22 +53,19 @@ func main() {
 		defer rdb.Close()
 		logger.L().Info().Str("addr", cfg.Redis.Addr).Msg("redis connected")
 	}
-	_ = rdb // 预留缓存使用
 
 	// JWT
 	jwtMgr := jwt.New(cfg.JWT.Secret, cfg.JWT.ExpireHours)
 	logger.L().Info().Int("expire_hours", cfg.JWT.ExpireHours).Msg("jwt initialized")
 
 	// 路由
-	authSvc := service.NewAuthService(database.Pool, jwtMgr)
-	userSvc := service.NewUserService(database.Pool)
+	userSvc := service.NewUserService(database.Pool, rdb, jwtMgr)
 	dramaSvc := service.NewDramaService(database.Pool)
 
 	r := router.Setup(router.Config{
 		APIConfig: huma.DefaultConfig("Golang Learn API", "1.0.0"),
 		JWT:       jwtMgr,
 		Handlers: []router.Handler{
-			handler.NewAuthHandler(authSvc),
 			handler.NewUserHandler(userSvc),
 			handler.NewDramaHandler(dramaSvc),
 		},
