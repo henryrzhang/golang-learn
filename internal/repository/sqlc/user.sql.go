@@ -87,6 +87,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
+		//row.Scan(i.ID)  // 传入的是 ID 的副本，Scan 修改的是副本，不影响 i.ID。传指针，Scan 可以修改 i.ID
 		&i.ID,
 		&i.Name,
 		&i.Email,
